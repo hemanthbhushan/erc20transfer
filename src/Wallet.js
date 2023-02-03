@@ -3,10 +3,13 @@ import { ethers } from "ethers";
 import styles from "./Wallet.module.css";
 import Musicverse_abi from "./Contracts/Musicverse_abi.json";
 import Interactions from "./Interactions";
+import Burn from "./Burn";
+import Balance from "./Balance";
+import Mint from "./Mint";
 
 const Wallet = () => {
   // deploy simple token contract and paste deployed contract address here. This value is local ganache chain
-  let contractAddress = "0xac4637353c5aB032141A5837F879170D7aC95c02";
+  let contractAddress = "0xfF21c9ee6c1ED72FFaC28E3121A809E7B58172Ca";
 
   const [errorMessage, setErrorMessage] = useState(null);
   const [defaultAccount, setDefaultAccount] = useState(null);
@@ -45,7 +48,8 @@ const Wallet = () => {
 
   const updateBalance = async () => {
     let balanceBigN = await contract.balanceOf(defaultAccount);
-    let balanceNumber = balanceBigN.toNumber();
+    let balanceNumber = balanceBigN.toString();
+    console.log('balanceNumber', balanceNumber)
 
     let tokenDecimals = await contract.decimals();
 
@@ -129,7 +133,13 @@ const Wallet = () => {
 
         {errorMessage}
       </div>
-      {contract !== null && <Interactions contract={contract} />}
+      {contract !== null &&
+      <>
+       <Interactions contract={contract} />
+                              <Burn contract={contract}/>
+                              <Balance contract={contract}/>
+                              <Mint contract={contract}/>
+                              </>}
     </div>
   );
 };

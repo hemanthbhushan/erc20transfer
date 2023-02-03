@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+const { BigNumber } = require("ethers");
+
 // import styles from "./Wallet.module.css";
+
+function expandTo18Decimals(n) {
+  return BigNumber.from(n).mul(BigNumber.from(10).pow(18));
+}
 
 const Interactions = (props) => {
   const [transferHash, setTransferHash] = useState();
@@ -21,12 +27,9 @@ const Interactions = (props) => {
     onSubmit: async (values, { resetForm }) => {
       let transferAmount = values.sendAmount;
       let recieverAddress = values.recieverAddress;
-      let approveAmount = values.approveAmount;
-      let approveAddress = values.approveAddress;
-      let txt = await props.contract.transfer(recieverAddress, transferAmount);
-      let approved = await props.contract.approve(approveAddress,approveAmount);
-      setApprove(approved)
-      console.log(txt);
+      
+      let txt = await props.contract.transfer(recieverAddress, expandTo18Decimals(transferAmount));
+     
       setTransferHash("Transfer confirmation hash: " + txt.hash);
     },
   });
@@ -43,7 +46,7 @@ const Interactions = (props) => {
             type="text"
             {...formik.getFieldProps("recieverAddress")}
           />
-          <h3> Send Amount </h3>
+         
           <label htmlFor="sendAmount">Send Amount</label>
           <input
             id="sendAmount"
@@ -51,26 +54,10 @@ const Interactions = (props) => {
             type="text"
             {...formik.getFieldProps("sendAmount")}
           />
-          <label htmlFor="approveAddress">Approve Address </label>
-          <input
-            id="approveAddress"
-            className="form-control"
-            type="text"
-            {...formik.getFieldProps("approveAddress")}
-          />
-           <label htmlFor="approveAddress">Approve Amount </label>
-          <input
-            id="approveAmount"
-            className="form-control"
-            type="text"
-            {...formik.getFieldProps("approveAmount")}
-          />
+          
 
           <button type="submit">Send</button>
-          {
-            approve?
-            <h4>approved</h4>:<h4>not Approved</h4>
-          }
+         
           <div>{transferHash}</div>
         </form>
       </div>
